@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: ChopWood
   m_EditorClassIdentifier: 
   _prerequisites:
-  - Have axe
+  - effectName: Have Axe
+    value: 1
   _effects:
-  - effectName: Have wood
+  - effectName: Have Wood
     value: 1
   _waypoint: WoodBillot
   _cost: 5

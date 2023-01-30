@@ -20,6 +20,8 @@ namespace Agent{
         public NavMeshAgent NavMeshAgent => _navMeshAgent;
         private NavMeshAgent _navMeshAgent;
 
+        private AgentPlanner _planner;
+        
         public List<string> CurrentPrerequisites;
         public Goal CurrentGoal;
         public Stack<Action> Actions = new();
@@ -27,6 +29,7 @@ namespace Agent{
 
         private void Start(){
             _navMeshAgent = GetComponent<NavMeshAgent>();
+            _planner = GetComponent<AgentPlanner>();
             CurrentGoal = null;
 
             CurrentState = new AgentIdle(this);
@@ -39,6 +42,11 @@ namespace Agent{
         private void Update(){
             _currentState.Update();
             _currentState.CheckForTransitions();
+        }
+
+        [ContextMenu("CheckGoal")]
+        public void CheckGoal(){
+            _planner.CalculatePath();
         }
     }
 }

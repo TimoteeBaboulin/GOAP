@@ -10,13 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8018fdb753d40698359c34f16ded7b2, type: 3}
-  m_Name: GetAxe
+  m_Name: CraftBow
   m_EditorClassIdentifier: 
   _prerequisites:
-  - effectName: Have Axe
-    value: 0
-  _effects:
-  - effectName: Have Axe
+  - effectName: Have Wood
     value: 1
-  _waypoint: Axe
-  _cost: 3
+  _effects:
+  - effectName: Have Bow
+    value: 1
+  - effectName: Have Wood
+    value: 0
+  _waypoint: WoodBillot
+  _cost: 5

@@ -8,10 +8,11 @@ public struct Effect{
     public bool value;
 }
 
+[Serializable]
 [CreateAssetMenu(menuName = "GOAP/Action", fileName = "New Action", order = 0)]
 public class Action : ScriptableObject{
-    public string[] Prerequisites => _prerequisites;
-    [SerializeField] private string[] _prerequisites;
+    public Effect[] Prerequisites => _prerequisites;
+    [SerializeField] private Effect[] _prerequisites;
 
     public Effect[] Effects => _effects;
     [SerializeField] private Effect[] _effects;

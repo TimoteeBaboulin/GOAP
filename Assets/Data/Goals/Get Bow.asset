@@ -9,14 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8018fdb753d40698359c34f16ded7b2, type: 3}
-  m_Name: GetAxe
+  m_Script: {fileID: 11500000, guid: 3b501ca2efe70d94f81f893971aa3fb1, type: 3}
+  m_Name: Get Bow
   m_EditorClassIdentifier: 
-  _prerequisites:
-  - effectName: Have Axe
-    value: 0
-  _effects:
-  - effectName: Have Axe
+  _prerequisites: []
+  _effects: []
+  _waypoint: Player
+  _cost: 0
+  _prerequisite:
+    effectName: Have Bow
     value: 1
-  _waypoint: Axe
-  _cost: 3
