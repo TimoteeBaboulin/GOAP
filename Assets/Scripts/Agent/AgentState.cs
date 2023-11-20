@@ -2,9 +2,9 @@
 
 namespace Agent{
     public abstract class AgentState{
-        protected Agent _agent;
+        protected AgentBehaviour _agent;
         
-        protected AgentState(Agent agent){
+        protected AgentState(AgentBehaviour agent){
             if (agent == null) throw new NullReferenceException("Agent is null in state initialization.");
             _agent = agent;
         }

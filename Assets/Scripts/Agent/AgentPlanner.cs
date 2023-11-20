@@ -5,49 +5,51 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Agent{
-    [RequireComponent(typeof(Agent))]
+    [RequireComponent(typeof(AgentBehaviour))]
     public class AgentPlanner : MonoBehaviour{
-        [SerializeField] private List<Action> _actions;
+        [SerializeField] private List<Action2> _actions;
 
-        private Agent _agent;
-        [SerializeField]private Goal _currentGoal;
+        private AgentBehaviour _agentBehaviour;
+        [SerializeField]private Goal2 _currentGoal;
 
         private void Start(){
-            _agent = GetComponent<Agent>();
+            _agentBehaviour = GetComponent<AgentBehaviour>();
         }
 
-        public void SetGoal(Goal goal){
+        public void SetGoal(Goal2 goal){
             _currentGoal = goal;
         }
 
         public bool CalculatePath(){
-            if (_agent.CurrentPrerequisites.Contains(_currentGoal.Prerequisite.effectName))
+            if (_currentGoal.Goal.IsValid(_agentBehaviour.Agent))
                 return false;
             
             //Initialise variables for the function
-            List<Effect> effects = new();
-            effects.Add(_currentGoal.Prerequisite);
-            Node baseNode = new Node(_currentGoal);
-            Dictionary<Action, Node> nodes = new Dictionary<Action, Node>();
+            List<Prerequisite> preconditions = new();
+            preconditions.Add(_currentGoal.Goal);
+            Node2 baseNode = new Node2(_currentGoal);
+            Dictionary<Action2, Node2> nodes = new Dictionary<Action2, Node2>();
             nodes.Add(_currentGoal, baseNode);
-            
+
             //Generate the tree
-            GenerateGraph(effects, nodes, baseNode);
+            IAgent newAgent = _agentBehaviour.Agent.Clone();
+            GenerateGraph2(preconditions, nodes, baseNode, newAgent);
             
             //Pathfinding
-            List<Node> path = Djikstra(nodes.Values.ToList(), baseNode);
+            List<Node2> path = Djikstra(nodes.Values.ToList(), baseNode);
 
-            Stack<Action> actions = new Stack<Action>();
+            Stack<Action2> actions = new Stack<Action2>();
 
-            for (int x = path.Count - 1; x >= 0; x--){
+            for (int x = 0; x < path.Count; x++){
                 actions.Push(path[x].Action);
             }
-            _agent.Actions = actions;
-            _agent.CurrentGoal = _currentGoal;
+            _agentBehaviour.Agent.SetActions(actions.ToArray());
+            _agentBehaviour.Agent.CurrentGoal = _currentGoal;
+            Debug.Log(actions.Count);
             return true;
         }
 
-        private void GenerateGraph(List<Effect> prerequisites, Dictionary<Action, Node> nodes, Node lastNode){
+       /* private void GenerateGraph(List<Effect> prerequisites, Dictionary<Action, Node> nodes, Node lastNode){
             if (CheckPrerequisites(prerequisites)) return;
 
             foreach (var action in _actions){
@@ -80,27 +82,86 @@ namespace Agent{
                 
                 GenerateGraph(newPrerequisites, nodes, node);
             }
+        }*/
+
+        private void GenerateGraph2(List<Prerequisite> prerequisites, Dictionary<Action2, Node2> nodes, Node2 lastNode, IAgent agent)
+        {
+            for (int x = prerequisites.Count - 1; x >= 0; x--)
+            {
+                if (!prerequisites[x].IsValid(agent)) continue;
+
+                prerequisites.RemoveAt(x);
+            }
+
+            if (prerequisites.Count == 0) return;
+
+            foreach (var action in _actions)
+            {
+                List<Prerequisite> newPrerequisites = new List<Prerequisite>(prerequisites);
+
+                int count = 0;
+                IAgent newAgent = agent.Clone();
+                foreach (var effect in action.Effects)
+                {
+                    effect.Activate(newAgent);
+
+                    /*if (!prerequisites.Contains(effect)) continue;
+
+                    count++;
+                    newPrerequisites.Remove(effect);*/
+                }
+
+                for (int x = newPrerequisites.Count - 1; x >= 0; x--)
+                {
+                    if (!prerequisites[x].IsValid(newAgent)) continue;
+
+                    newPrerequisites.RemoveAt(x);
+                    count++;
+                }
+
+                if (count == 0) continue;
+                foreach (var prerequisite in action.Prerequisites)
+                {
+                    if (!prerequisite.IsValid(newAgent))
+                        newPrerequisites.Add(prerequisite);
+                }
+
+                Node2 node;
+                if (!nodes.ContainsKey(action))
+                {
+                    node = new Node2(action);
+                    nodes.Add(action, node);
+                }
+                else
+                    node = nodes[action];
+
+                node.Parent.Add(lastNode);
+                lastNode.Children.Add(node);
+
+                GenerateGraph2(newPrerequisites, nodes, node, newAgent);
+            }
         }
-        private bool CheckPrerequisites(List<Effect> prerequisites){
+
+        /*private bool CheckPrerequisites(List<Effect> prerequisites){
             foreach (var prerequisite in prerequisites){
                 switch (prerequisite.value){
                     case true:
-                        if (!_agent.CurrentPrerequisites.Contains(prerequisite.effectName)) return false;
+                        if (!_agentBehaviour.CurrentPrerequisites.Contains(prerequisite.effectName)) return false;
                         break;
                     case false:
-                        if (_agent.CurrentPrerequisites.Contains(prerequisite.effectName)) return false;
+                        if (_agentBehaviour.CurrentPrerequisites.Contains(prerequisite.effectName)) return false;
                         break;
                 }
             }
 
             return true;
-        }
+        }*/
 
-        private List<Node> Djikstra(List<Node> nodes, Node start){
-            List<Node> unvisited = new List<Node>(nodes);
-            Node[] leafNodes = unvisited.Where(obj => obj.Children.Count == 0).ToArray();
-            Node current = start;
-            Dictionary<Node, Node> previous = new();
+        private List<Node2> Djikstra(List<Node2> nodes, Node2 start){
+            List<Node2> unvisited = new List<Node2>(nodes);
+            Node2[] leafNodes = unvisited.Where(obj => obj.Children.Count == 0).ToArray();
+            Node2 current = start;
+            Dictionary<Node2, Node2> previous = new();
             
             foreach (var node in unvisited){
                 node.value = node == start ? 0 : Int32.MaxValue;
@@ -121,10 +182,10 @@ namespace Agent{
                     current = unvisited[0];
             }
 
-            List<Node> bestPath = null;
+            List<Node2> bestPath = null;
             int bestValue = Int32.MaxValue;
             foreach (var leaf in leafNodes){
-                List<Node> path = new();
+                List<Node2> path = new();
                 current = leaf;
                 int value = current.Cost;
                 path.Add(current);

@@ -2,13 +2,12 @@
 
 namespace Agent{
     public class AgentMoveTo : AgentState{
-        public AgentMoveTo(Agent agent) : base(agent){ }
+        public AgentMoveTo(AgentBehaviour agent) : base(agent){ }
         public override void Enter(){
-            _agent.NavMeshAgent.SetDestination(_agent.Actions.Peek().Position);
+            _agent.NavMeshAgent.SetDestination(_agent.CurrentAction.Position);
         }
 
         public override void Update(){
-            Debug.Log("Moving");
         }
 
         public override void Exit(){

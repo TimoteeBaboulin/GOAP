@@ -2,9 +2,11 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Agent{
+namespace Agent
+{
     [RequireComponent(typeof(NavMeshAgent))]
-    public class Agent : MonoBehaviour{
+    public class AgentBehaviour : MonoBehaviour
+    {
         public AgentState CurrentState{
             get => _currentState;
             set{
@@ -21,22 +23,19 @@ namespace Agent{
         private NavMeshAgent _navMeshAgent;
 
         private AgentPlanner _planner;
-        
-        public List<string> CurrentPrerequisites;
-        public Goal CurrentGoal;
-        public Stack<Action> Actions = new();
-        public Action[] StartupActions;
+
+        public Action2 CurrentAction => _agent.Actions.Peek();
+        public int ActionCount => _agent.Actions.Count;
+
+        public Agent Agent => _agent;
+        private Agent _agent = new();
 
         private void Start(){
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _planner = GetComponent<AgentPlanner>();
-            CurrentGoal = null;
 
             CurrentState = new AgentIdle(this);
-            if (StartupActions.Length == 0) return;
-            for (int x = StartupActions.Length - 1; x >= 0; x--){
-                Actions.Push(StartupActions[x]);
-            }
+            _agent = new();
         }
 
         private void Update(){
@@ -47,6 +46,11 @@ namespace Agent{
         [ContextMenu("CheckGoal")]
         public void CheckGoal(){
             _planner.CalculatePath();
+        }
+
+        public void SetGoal(Goal2 goal)
+        {
+            _agent.CurrentGoal = goal;
         }
     }
 }
