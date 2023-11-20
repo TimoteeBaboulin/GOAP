@@ -6,9 +6,9 @@ namespace Agent
     public interface IAgent
     {
         public EntityInventory Inventory { get; }
-        public Goal2 CurrentGoal { get; set; }
+        public Goal CurrentGoal { get; set; }
 
-        public void SetActions(Action2[] actions);
+        public void SetActions(Action[] actions);
         public IAgent Clone();
     }
 
@@ -18,16 +18,16 @@ namespace Agent
         public EntityInventory Inventory { get { return _inventory; } }
         private EntityInventory _inventory;
 
-        public Goal2 CurrentGoal {
+        public Goal CurrentGoal {
             get { return _currentGoal; }
             set { _currentGoal = value; }
         }
-        private Goal2 _currentGoal;
+        private Goal _currentGoal;
 
-        public Stack<Action2> Actions => _actions;
-        private Stack<Action2> _actions = new();
+        public Stack<Action> Actions => _actions;
+        private Stack<Action> _actions = new();
 
-        public void SetActions(Action2[] actions)
+        public void SetActions(Action[] actions)
         {
             _actions.Clear();
 

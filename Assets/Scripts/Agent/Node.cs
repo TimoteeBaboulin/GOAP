@@ -16,7 +16,7 @@ public class Node{
 
 public class Node2
 {
-    public readonly Action2 Action;
+    public readonly Action Action;
     public int Cost => Action.Cost;
 
     public int value;
@@ -24,7 +24,7 @@ public class Node2
     public List<Node2> Children = new();
     public List<Node2> Parent = new();
 
-    public Node2(Action2 action)
+    public Node2(Action action)
     {
         Action = action;
     }

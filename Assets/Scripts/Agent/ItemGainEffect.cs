@@ -3,7 +3,7 @@
 namespace Agent
 {
     [CreateAssetMenu(menuName = "GOAP/Effects/ItemGain", fileName ="New Item Gain Effect", order = 0)]
-    public class ItemGainEffect : Effect2
+    public class ItemGainEffect : Effect
     {
         public Item Item;
         public int Amount;

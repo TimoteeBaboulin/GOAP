@@ -24,7 +24,7 @@ namespace Agent
 
         private AgentPlanner _planner;
 
-        public Action2 CurrentAction => _agent.Actions.Peek();
+        public Action CurrentAction => _agent.Actions.Peek();
         public int ActionCount => _agent.Actions.Count;
 
         public Agent Agent => _agent;
@@ -48,7 +48,7 @@ namespace Agent
             _planner.CalculatePath();
         }
 
-        public void SetGoal(Goal2 goal)
+        public void SetGoal(Goal goal)
         {
             _agent.CurrentGoal = goal;
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Agent{
     public class AgentPerformAction : AgentState{
         private float _time;
-        private Effect2[] _effects;
+        private Effect[] _effects;
 
         public AgentPerformAction(AgentBehaviour agent) : base(agent){ }
         

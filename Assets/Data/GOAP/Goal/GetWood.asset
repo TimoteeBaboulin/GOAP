@@ -11,11 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b501ca2efe70d94f81f893971aa3fb1, type: 3}
   m_Name: GetWood
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::Goal2
   _prerequisites: []
   _effects: []
   _waypoint: Player
   _cost: 0
-  _prerequisite:
-    effectName: Have Wood
-    value: 1
+  _goal: {fileID: 11400000, guid: 54a82b940a9724e49a693dcd18851ab6, type: 2}

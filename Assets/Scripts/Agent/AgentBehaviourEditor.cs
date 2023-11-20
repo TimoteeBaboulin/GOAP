@@ -13,8 +13,8 @@ namespace Agent
         SerializedProperty _agentGoal;
         SerializedProperty _agentActions;
 
-        Goal2 _currentGoal;
-        Action2[] _actions;
+        Goal _currentGoal;
+        Action[] _actions;
 
         public override void OnInspectorGUI()
         {
@@ -33,11 +33,11 @@ namespace Agent
                 EditorGUILayout.IntField(item.name, amount);
             }
 
-            EditorGUILayout.ObjectField("Goal", _currentGoal, typeof(Goal2), true);
+            EditorGUILayout.ObjectField("Goal", _currentGoal, typeof(Goal), true);
             int index = 0;
-            foreach (Action2 action in _actions)
+            foreach (Action action in _actions)
             {
-                EditorGUILayout.ObjectField("Action " + (index + 1), action, typeof(Action2), true);
+                EditorGUILayout.ObjectField("Action " + (index + 1), action, typeof(Action), true);
                 index++;
             }
             

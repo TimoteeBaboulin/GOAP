@@ -11,12 +11,10 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8018fdb753d40698359c34f16ded7b2, type: 3}
   m_Name: GetAxe
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::Action2
   _prerequisites:
-  - effectName: Have Axe
-    value: 0
+  - {fileID: 11400000, guid: 0474dbc0c358eb14a87d509c375639a2, type: 2}
   _effects:
-  - effectName: Have Axe
-    value: 1
+  - {fileID: 11400000, guid: 492c5925b4c9c994387628a149da9418, type: 2}
   _waypoint: Axe
-  _cost: 3
+  _cost: 5

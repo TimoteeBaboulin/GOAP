@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: GetAxe
+  m_Script: {fileID: 11500000, guid: c8018fdb753d40698359c34f16ded7b2, type: 3}
+  m_Name: ChopWood
   m_EditorClassIdentifier: Assembly-CSharp::Action2
   _prerequisites:
-  - {fileID: 11400000, guid: 0474dbc0c358eb14a87d509c375639a2, type: 2}
+  - {fileID: 11400000, guid: 2a69970bda195fe4c8c815d2b9790678, type: 2}
   _effects:
-  - {fileID: 11400000, guid: 492c5925b4c9c994387628a149da9418, type: 2}
-  _waypoint: Axe
-  _cost: 5
+  - {fileID: 11400000, guid: 27a3062f2a78d8046a4f51e69051c9de, type: 2}
+  _waypoint: WoodBillot
+  _cost: 2
