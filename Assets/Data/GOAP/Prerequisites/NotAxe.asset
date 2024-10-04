@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 974474a4a6fca96438440037ed097533, type: 3}
   m_Name: NotAxe
   m_EditorClassIdentifier: 
+  Type: 1
   Item: {fileID: 11400000, guid: bb7b516c51851e449bd51ca1f80b0bf1, type: 2}
   Amount: 1

@@ -15,7 +15,7 @@ namespace Agent{
         public override void Exit(){ }
 
         public override void CheckForTransitions(){
-            if (_agent.Agent.CurrentGoal == null) return;
+            if (!_agent.Agent.CurrentGoal) return;
 
             if (_agent.ActionCount == 0)
                 throw new IndexOutOfRangeException("Agent goal is not null despite not having any actions");

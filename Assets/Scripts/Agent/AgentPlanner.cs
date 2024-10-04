@@ -1,22 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace;
 using UnityEngine;
 
 namespace Agent{
     [RequireComponent(typeof(AgentBehaviour))]
     public class AgentPlanner : MonoBehaviour{
         [SerializeField] private List<Action> _actions;
+        [SerializeField] private List<GameplayAction> _gameplayActions;
 
         private AgentBehaviour _agentBehaviour;
         [SerializeField]private Goal _currentGoal;
 
+        private void Awake()
+        {
+            GameplayAction.agentPlanners.Add(this);
+        }
+
         private void Start(){
             _agentBehaviour = GetComponent<AgentBehaviour>();
+            
         }
 
         public void SetGoal(Goal goal){
             _currentGoal = goal;
+        }
+
+        public void AddAction(GameplayAction action)
+        {
+            if (_gameplayActions.Contains(action)) return;
+            _gameplayActions.Add(action);
+        }
+        
+        public void RemoveAction(GameplayAction action)
+        {
+            if (!_gameplayActions.Contains(action)) return;
+            _gameplayActions.Remove(action);
         }
 
         public bool CalculatePath(){
@@ -26,29 +46,29 @@ namespace Agent{
             //Initialise variables for the function
             List<Prerequisite> preconditions = new();
             preconditions.Add(_currentGoal.Required);
-            Node2 baseNode = new Node2(_currentGoal);
-            Dictionary<Action, Node2> nodes = new Dictionary<Action, Node2>();
-            nodes.Add(_currentGoal, baseNode);
+            Node baseNode = new Node(_currentGoal);
+            Dictionary<GameplayAction, Node> nodes = new Dictionary<GameplayAction, Node>();
 
             //Generate the tree
             IAgent newAgent = _agentBehaviour.Agent.Clone();
             GenerateGraph2(preconditions, nodes, baseNode, newAgent);
             
             //Pathfinding
-            List<Node2> path = Djikstra(nodes.Values.ToList(), baseNode);
+            List<Node> nodeList = nodes.Values.ToList();
+            nodeList.Add(baseNode);
+            List<Node> path = Djikstra(nodeList, baseNode);
 
-            Stack<Action> actions = new Stack<Action>();
+            Stack<GameplayAction> actions = new Stack<GameplayAction>();
 
             for (int x = 0; x < path.Count; x++){
                 actions.Push(path[x].Action);
             }
             _agentBehaviour.Agent.SetActions(actions.ToArray());
             _agentBehaviour.Agent.CurrentGoal = _currentGoal;
-            Debug.Log(actions.Count);
             return true;
         }
 
-        private void GenerateGraph2(List<Prerequisite> prerequisites, Dictionary<Action, Node2> nodes, Node2 lastNode, IAgent agent)
+        private void GenerateGraph2(List<Prerequisite> prerequisites, Dictionary<GameplayAction, Node> nodes, Node lastNode, IAgent agent)
         {
             for (int x = prerequisites.Count - 1; x >= 0; x--)
             {
@@ -59,16 +79,19 @@ namespace Agent{
 
             if (prerequisites.Count == 0) return;
 
-            foreach (var action in _actions)
+            foreach (var action in _gameplayActions)
             {
                 List<Prerequisite> newPrerequisites = new List<Prerequisite>(prerequisites);
 
                 int count = 0;
                 IAgent newAgent = agent.Clone();
+                bool effectBlock = false;
                 foreach (var effect in action.Effects)
                 {
                     effect.Activate(newAgent);
                 }
+
+                if (effectBlock) continue;
 
                 for (int x = newPrerequisites.Count - 1; x >= 0; x--)
                 {
@@ -85,10 +108,10 @@ namespace Agent{
                         newPrerequisites.Add(prerequisite);
                 }
 
-                Node2 node;
+                Node node;
                 if (!nodes.ContainsKey(action))
                 {
-                    node = new Node2(action);
+                    node = new Node(action);
                     nodes.Add(action, node);
                 }
                 else
@@ -101,11 +124,11 @@ namespace Agent{
             }
         }
 
-        private List<Node2> Djikstra(List<Node2> nodes, Node2 start){
-            List<Node2> unvisited = new List<Node2>(nodes);
-            Node2[] leafNodes = unvisited.Where(obj => obj.Children.Count == 0).ToArray();
-            Node2 current = start;
-            Dictionary<Node2, Node2> previous = new();
+        private List<Node> Djikstra(List<Node> nodes, Node start){
+            List<Node> unvisited = new List<Node>(nodes);
+            Node[] leafNodes = unvisited.Where(obj => obj.Children.Count == 0).ToArray();
+            Node current = start;
+            Dictionary<Node, Node> previous = new();
             
             foreach (var node in unvisited){
                 node.value = node == start ? 0 : Int32.MaxValue;
@@ -114,9 +137,9 @@ namespace Agent{
 
             while (unvisited.Any(obj=> obj.value != Int32.MaxValue)){
                 foreach (var child in current.Children){
-                    if (child.value > current.value + child.Cost){
+                    if (child.value > current.value + child.GetCost(current.isGoal ? child.Position : current.Position)){
                         previous[child] = current;
-                        child.value = current.value + child.Cost;
+                        child.value = current.value + child.GetCost(current.isGoal ? child.Position : current.Position);
                     }
                 }
 
@@ -126,21 +149,29 @@ namespace Agent{
                     current = unvisited[0];
             }
 
-            List<Node2> bestPath = null;
-            int bestValue = Int32.MaxValue;
+            List<Node> bestPath = null;
+            float bestValue = float.MaxValue;
             foreach (var leaf in leafNodes){
-                List<Node2> path = new();
+                List<Node> path = new();
                 current = leaf;
-                int value = current.Cost;
+                Vector3 position = previous[current] == null ? transform.position :
+                    previous[current].isGoal ? current.Position : previous[current].Position;
+                float value = current.GetCost(position);
                 path.Add(current);
                 while (previous[current] != null){
                     current = previous[current];
-                    value += current.Cost;
+                    position = previous[current] == null ? transform.position :
+                        previous[current].isGoal ? current.Position : previous[current].Position;
+                    value += current.GetCost(position);
                     path.Add(current);
                 }
 
                 if (current != start)
                     continue;
+                else
+                {
+                    path.Remove(current);
+                }
                 
                 if (value < bestValue){
                     bestValue = value;

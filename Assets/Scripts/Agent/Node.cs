@@ -1,31 +1,33 @@
 ﻿using System.Collections.Generic;
+using DefaultNamespace;
+using UnityEngine;
 
-public class Node{
-    public readonly Action Action;
-    public int Cost => Action.Cost;
+public class Node
+{
+    public readonly GameplayAction Action;
+    public readonly Goal Goal;
+    public float GetCost(Vector3 _position)
+    {
+        return Action != null ? Action.GetCost(_position) : 0;
+    }
 
-    public int value;
-    
+    public float value;
+
     public List<Node> Children = new();
     public List<Node> Parent = new();
 
-    public Node(Action action){
-        Action = action;
-    }
-}
+    public bool isGoal;
+    public Vector3 Position => Action.Position;
 
-public class Node2
-{
-    public readonly Action Action;
-    public int Cost => Action.Cost;
-
-    public int value;
-
-    public List<Node2> Children = new();
-    public List<Node2> Parent = new();
-
-    public Node2(Action action)
+    public Node(GameplayAction action)
     {
         Action = action;
+        isGoal = false;
+    }
+
+    public Node(Goal goal)
+    {
+        Goal = goal;
+        isGoal = true;
     }
 }
